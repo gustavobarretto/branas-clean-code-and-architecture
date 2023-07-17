@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import Passenger from "../../application/domain/Passenger";
 import pgp from "pg-promise";
+import { CreatePassengerUseCase } from "../../application/usecase/passenger/CreatePassengerUseCase";
 
 export default class PassengerHandler {
-  constructor() {}
+  constructor(readonly createPassengerUseCase: CreatePassengerUseCase) { }
 
   async create(req: Request, res: Response) {
     try {
@@ -27,7 +28,7 @@ export default class PassengerHandler {
     const connection = pgp()("postgres://postgres:123456@localhost:5432/app");
     const [passengerData] = await connection.query(
       "select * from cccat12.passenger where passenger_id = $1",
-      [req.params.passengerId]
+      [req.params.passengerId],
     );
     await connection.$pool.end();
     res.json(passengerData);

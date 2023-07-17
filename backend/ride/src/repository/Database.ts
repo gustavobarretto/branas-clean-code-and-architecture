@@ -2,8 +2,7 @@ import pgp from "pg-promise";
 import { IClient } from "pg-promise/typescript/pg-subset";
 
 export default class Database {
-
-  readonly database: IClient
+  readonly database: IClient;
 
   constructor() {
     try {
