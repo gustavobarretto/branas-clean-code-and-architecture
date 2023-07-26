@@ -1,15 +1,17 @@
 import { Request, Response } from "express";
-import Passenger from "../../application/domain/Passenger";
-import pgp from "pg-promise";
-import { CreatePassengerUseCase } from "../../application/usecase/passenger/CreatePassengerUseCase";
+import CreatePassengerUseCase from "../../application/usecase/passenger/CreatePassengerUseCase";
+import FindUserByIdUseCase from "../../application/usecase/passenger/FindUserByIdUseCase";
 
 export default class PassengerHandler {
-  constructor(readonly createPassengerUseCase: CreatePassengerUseCase) { }
+  constructor(
+    readonly createPassengerUseCase: CreatePassengerUseCase,
+    readonly findUserByIdUseCase: FindUserByIdUseCase
+  ) { }
 
   async create(req: Request, res: Response) {
     try {
       const { name, email, document } = req.body;
-      const { id } = new Passenger(name, email, document);
+      const { id } = await this.createPassengerUseCase.execute({ name, email, document })
       res
         .json({
           passenger_id: id,
@@ -25,12 +27,6 @@ export default class PassengerHandler {
   }
 
   async findUserById(req: Request, res: Response) {
-    const connection = pgp()("postgres://postgres:123456@localhost:5432/app");
-    const [passengerData] = await connection.query(
-      "select * from cccat12.passenger where passenger_id = $1",
-      [req.params.passengerId],
-    );
-    await connection.$pool.end();
-    res.json(passengerData);
+    res.json(this.findUserByIdUseCase.execute(req.body.id));
   }
 }
