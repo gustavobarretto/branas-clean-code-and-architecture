@@ -39,3 +39,7 @@ test("Given a passenger with invalid document, when create, then return bad requ
   expect(response.status).toBe(400);
   expect(response.data.message).toBe("Invalid document.")
 })
+
+test("Given a valid passenger, when create, then return id", async function() {
+
+})
